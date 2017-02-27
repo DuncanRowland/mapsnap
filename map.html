@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <title>Render Me</title>
+   <meta charset="utf-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <link rel="stylesheet" href="https://unpkg.com/leaflet@0.7.7/dist/leaflet.css" />
+   <script src="https://unpkg.com/leaflet@0.7.7/dist/leaflet.js"></script>
+</head>
+<body style="margin-left: 0px;margin-top: 0px;margin-right: 0px;margin-bottom: 0px;">
+   <div id="loaded" style="display:none">LOADING</div>
+   <div id="map" style="height: 900px; width: 900px; border:none;"></div>
+   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+   <script>
+   //add a base layer 
+   var cmAttr = 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade',
+        cmUrl = 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
+   var background = L.tileLayer(cmUrl, {styleId: 22677, attribution: cmAttr});
+   //add an occurrence layer for macropus
+   var macropus = L.tileLayer.wms(
+	             "https://records-ws.nbnatlas.org/mapping/wms/reflect", {
+                        //q : "rkid_species:NHMSYS0000344177", does not work
+                        q: 'Erythromma viridulum',
+                    layers: 'ALA:occurrences',
+                    format: 'image/png',
+               transparent: true,
+               attribution: "Atlas of Living Australia",
+                   bgcolor: "0x000000",
+                // outline: "true",
+            // TILEOUTLINE: "true",
+                       ENV: "colourmode:osgrid;color:ffff00;name:circle;size:4;opacity:0.5;gridlabels:true;gridres:singlegrid"
+                  });
+   macropus.on('load', function(e) {
+      setTimeout(function(){
+         $('#loaded').text("DONE");
+      }, 500);
+   });
+   var speciesLayers = new L.LayerGroup();
+   macropus.addTo(speciesLayers);
+
+   var map = L.map('map', {
+      center: [55.7,-4.0],
+        zoom: 6,
+ zoomControl: false,
+      layers: [background, speciesLayers]
+   });
+</script>
+</body>
+</html>
